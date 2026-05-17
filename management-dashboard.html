@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Woolworths — EPS Management Portal</title>
+
+  <!--
+    ============================================================
+    WOOLWORTHS EPS MANAGEMENT DASHBOARD
+    A3: Deploy the Concept — MMGT6120
+    ============================================================
+    FOR BILLA:
+    - This is a standalone HTML file. Drop it into the repo as
+      /management/index.html (or integrate into the Next.js
+      app as a new page at /management).
+    - If integrating into Next.js/React:
+        1. Replace <script src="chart.js CDN"> with:
+           import { Chart } from 'chart.js'
+        2. Replace vanilla tab-switching JS with React useState
+        3. Replace hardcoded CSS with your existing Tailwind classes
+           where they match (dark sidebar = bg-[#1A2E20] etc.)
+    - The sidebar colour #1A2E20 matches the supplier portal exactly.
+    - All data is hardcoded/illustrative — wire to your backend as needed.
+    ============================================================
+  -->
+
+  <!-- Tabler Icons (same icon set used in supplier portal) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F2F4F0;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .portal { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .topbar {
+      background: #1A2E20;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      height: 52px;
+      gap: 12px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo-circle {
+      width: 28px; height: 28px;
+      background: #2D8A52;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-spacer { flex: 1; }
+
+    .cycle-badge {
+      background: rgba(255,255,255,0.12);
+      border: 0.5px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .usr-avatar {
+      width: 28px; height: 28px;
+      background: #2D6A4A;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: white;
+      flex-shrink: 0;
+    }
+
+    .body { display: flex; flex: 1; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #1A2E20;
+      width: 200px;
+      padding: 14px 0;
+      flex-shrink: 0;
+      position: sticky;
+      top: 52px;
+      height: calc(100vh - 52px);
+      overflow-y: auto;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 12px 16px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background 0.12s, color 0.12s;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+    .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left-color: #4CAF72; }
+    .nav-item i { font-size: 16px; }
+
+    .mtg-badge {
+      margin-left: auto;
+      background: #E07B2A;
+      color: white;
+      border-radius: 10px;
+      font-size: 10px;
+      padding: 1px 7px;
+    }
+
+    /* ── Content ── */
+    .content { flex: 1; padding: 24px; min-width: 0; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .pg-title { font-size: 18px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; }
+    .pg-sub { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+
+    /* ── KPI Cards ── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .kpi {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      border: 0.5px solid #e0e0da;
+    }
+
+    .kpi-lbl { font-size: 11px; color: #6B7280; margin-bottom: 6px; }
+    .kpi-val { font-size: 24px; font-weight: 500; color: #1a1a1a; line-height: 1; }
+    .kpi-sub { font-size: 11px; color: #6B7280; margin-top: 4px; }
+
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border-radius: 10px;
+      border: 0.5px solid #e0e0da;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-ttl { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 12px; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .two-col .card { margin-bottom: 0; }
+
+    /* ── Colours ── */
+    .g { color: #2D8A52; }
+    .o { color: #E07B2A; }
+    .r { color: #C0392B; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; font-size: 11px; color: #6B7280; font-weight: 500; padding: 6px 8px; border-bottom: 0.5px solid #e0e0da; }
+    td { padding: 9px 8px; border-bottom: 0.5px solid #e0e0da; color: #1a1a1a; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .clickable-row { cursor: pointer; transition: background 0.1s; }
+    .clickable-row:hover td { background: #F8FAF8; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .b-g { background: #E8F5EE; color: #1A6B38; }
+    .b-o { background: #FEF3E2; color: #8B5A1A; }
+    .b-r { background: #FEE8E8; color: #A32D2D; }
+    .b-gr { background: #F1F0EC; color: #5F5E5A; }
+    .b-bl { background: #E6F1FB; color: #185FA5; }
+
+    /* ── Progress bars ── */
+    .prog-bar { height: 8px; background: #E5E7E3; border-radius: 4px; overflow: hidden; margin: 4px 0; }
+    .prog-fill { height: 100%; background: #2D8A52; border-radius: 4px; }
+    .row-sb { display: flex; justify-content: space-between; font-size: 11px; color: #6B7280; }
+
+    /* ── Chart legend ── */
+    .clegend { display: flex; gap: 16px; margin-bottom: 10px; font-size: 11px; color: #6B7280; }
+    .cleg-dot { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+
+    /* ── Agenda ── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: #2D8A52; cursor: pointer;
+      margin-bottom: 16px; padding: 4px 0;
+    }
+    .back-btn:hover { opacity: 0.8; }
+
+    .agenda-header {
+      background: #1A2E20;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      color: white;
+    }
+
+    .agenda-step {
+      border: 0.5px solid #e0e0da;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: white;
+    }
+
+    .step-num {
+      width: 24px; height: 24px;
+      background: #1A2E20;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: white; font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .step-outcome {
+      background: #EAF3DE;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #27500A;
+      margin-top: 8px;
+    }
+
+    .step-warning {
+      background: #FEF3E2;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #8B5A1A;
+      margin-top: 8px;
+    }
+
+    /* ── Shelf placement ── */
+    .shelf-gained, .shelf-lost, .shelf-maintained {
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .shelf-gained { background: #E8F5EE; border-left: 3px solid #2D8A52; }
+    .shelf-lost { background: #FEF3E2; border-left: 3px solid #E07B2A; }
+    .shelf-maintained { background: #E6F1FB; border-left: 3px solid #185FA5; }
+
+    /* ── SDG cards ── */
+    .sdg-row { display: flex; gap: 12px; }
+    .sdg-card { border-radius: 8px; padding: 10px 14px; flex: 1; }
+
+    /* ── Dot ── */
+    .dot8 { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+    /* ── Input ── */
+    input[type="number"] {
+      border: 0.5px solid #d0d0ca;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #1a1a1a;
+      outline: none;
+    }
+    input[type="number"]:focus { border-color: #2D8A52; }
+
+    button.primary {
+      background: #1A2E20;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button.primary:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+<div class="portal">
+
+  <!-- ── Top Bar ── -->
+  <div class="topbar">
+    <div class="logo-circle">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7" stroke="white" stroke-width="1.5"/>
+        <path d="M5 8l2.5 2.5L11 5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span style="font-size:14px;font-weight:500;color:rgba(255,255,255,.95);">Woolworths</span>
+    <span style="color:rgba(255,255,255,.25);">|</span>
+    <span style="font-size:13px;color:rgba(255,255,255,.6);">Management Portal</span>
+    <div class="topbar-spacer"></div>
+    <div class="cycle-badge">F27 Renewal Cycle</div>
+    <div class="usr-avatar">SC</div>
+    <span style="font-size:12px;color:rgba(255,255,255,.65);">Sarah Chen</span>
+  </div>
+
+  <div class="body">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="nav-label">Main Menu</div>
+      <div class="nav-item active" onclick="sw('overview',this)" id="nav-overview">
+        <i class="ti ti-layout-dashboard"></i>Overview
+      </div>
+      <div class="nav-item" onclick="sw('suppliers',this)" id="nav-suppliers">
+        <i class="ti ti-building-store"></i>Suppliers
+      </div>
+      <div class="nav-item" onclick="sw('flag',this)" id="nav-flag">
+        <i class="ti ti-chart-line"></i>FLAG Progress
+      </div>
+      <div class="nav-label" style="margin-top:8px;">Actions</div>
+      <div class="nav-item" onclick="sw('meetings',this)" id="nav-meetings">
+        <i class="ti ti-users"></i>Meetings
+        <span class="mtg-badge">8</span>
+      </div>
+      <div class="nav-item" onclick="sw('shelf',this)" id="nav-shelf">
+        <i class="ti ti-award"></i>Shelf Outcomes
+      </div>
+    </div>
+
+    <!-- ── Main Content ── -->
+    <div class="content">
+
+      <!-- ════════════════════════════════
+           OVERVIEW
+      ════════════════════════════════ -->
+      <div class="panel active" id="panel-overview">
+        <div class="pg-title">F27 Cycle — EPS Program Overview</div>
+        <div class="pg-sub">Beef &amp; Lamb · 142 active suppliers · Renewal deadline 30 Jun 2025</div>
+
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-lbl">EPS submissions</div>
+            <div class="kpi-val">127<span style="font-size:15px;font-weight:400;color:#6B7280;">/142</span></div>
+            <div class="kpi-sub"><span class="g">89%</span> completion rate</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">Avg emissions intensity</div>
+            <div class="kpi-val">21.8</div>
+            <div class="kpi-sub" style="font-size:10px;">kg CO₂-e/kg HSCW &nbsp;<span class="g">↓5.6% vs F26</span></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">Improved year-on-year</div>
+            <div class="kpi-val g">74%</div>
+            <div class="kpi-sub">of submitted suppliers</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-lbl">Engagement meetings</div>
+            <div class="kpi-val o">8</div>
+            <div class="kpi-sub">bottom quartile · 2+ cycles</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Portfolio emissions intensity — F24 to F27 vs FLAG target trajectory</div>
+          <div class="clegend">
+            <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#2D8A52;"></span>Actual avg intensity</span>
+            <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#E07B2A;"></span>FLAG target</span>
+          </div>
+          <div style="position:relative;width:100%;height:240px;">
+            <canvas id="trendChart" role="img" aria-label="Line chart showing portfolio emissions intensity declining from 24.8 in F24 to 21.8 in F27, tracking close to the FLAG reduction target line">
+              Actual: F24 24.8, F25 24.1, F26 23.1, F27 21.8. FLAG target: F24 24.8, F25 23.7, F26 22.6, F27 21.5.
+            </canvas>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-ttl">Supplier quartile distribution — F27</div>
+            <div style="position:relative;width:100%;height:200px;">
+              <canvas id="quartileChart" role="img" aria-label="Horizontal bar chart: top quartile 36, Q2 32, Q3 31, bottom quartile 28, outstanding 15">
+                Top quartile 36, Q2 32, Q3 31, Bottom quartile 28, Outstanding 15.
+              </canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-ttl">EPS completion by sub-category</div>
+            <div style="margin-top:8px;">
+              <div style="margin-bottom:14px;">
+                <div class="row-sb" style="margin-bottom:4px;"><span>Fresh Beef</span><span style="font-weight:500;">94%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:94%;"></div></div>
+                <div class="row-sb"><span>78 / 83 submitted</span><span>5 outstanding</span></div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <div class="row-sb" style="margin-bottom:4px;"><span>Processed Beef</span><span style="font-weight:500;">83%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:83%;"></div></div>
+                <div class="row-sb"><span>33 / 40 submitted</span><span>7 outstanding</span></div>
+              </div>
+              <div>
+                <div class="row-sb" style="margin-bottom:4px;"><span>Lamb</span><span style="font-weight:500;">84%</span></div>
+                <div class="prog-bar"><div class="prog-fill" style="width:84%;"></div></div>
+                <div class="row-sb"><span>16 / 19 submitted</span><span>3 outstanding</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           SUPPLIERS
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-suppliers">
+        <div class="pg-title">Supplier Portfolio</div>
+        <div class="pg-sub">142 beef suppliers · F27 EPS scores and year-on-year performance</div>
+
+        <div class="card">
+          <div class="card-ttl">Top performers — F27 (top quartile, ≤19.5 kg CO₂-e/kg HSCW)</div>
+          <table>
+            <thead><tr><th>Supplier</th><th>F26</th><th>F27</th><th>Change</th><th>Percentile</th><th>Shelf status</th></tr></thead>
+            <tbody>
+              <tr><td>Green Pastures Beef</td><td>17.8</td><td>16.2</td><td><span class="g">↓9.0%</span></td><td>4th</td><td><span class="badge b-g">Premium shelf</span></td></tr>
+              <tr><td>Highlands Pastoral</td><td>18.1</td><td>16.9</td><td><span class="g">↓6.6%</span></td><td>8th</td><td><span class="badge b-g">Premium shelf</span></td></tr>
+              <tr><td>Riverland Organics</td><td>19.2</td><td>18.4</td><td><span class="g">↓4.2%</span></td><td>12th</td><td><span class="badge b-g">Premium shelf</span></td></tr>
+              <tr><td>Rocky Beef</td><td>22.4</td><td>20.1</td><td><span class="g">↓10.3%</span></td><td>38th</td><td><span class="badge b-gr">Standard</span></td></tr>
+              <tr><td>Southern Cross Beef</td><td>19.8</td><td>19.1</td><td><span class="g">↓3.5%</span></td><td>19th</td><td><span class="badge b-g">Premium shelf</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Bottom quartile — flagged for engagement meeting (≥23.5 kg CO₂-e/kg HSCW, 2+ cycles)</div>
+          <table>
+            <thead><tr><th>Supplier</th><th>F26</th><th>F27</th><th>Change</th><th>Cycles</th><th>Meeting</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="clickable-row" onclick="openAgenda('Outback Prime Meats','25.1','24.8','+1.2','2','28 Jun 2025')">
+                <td>Outback Prime Meats <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>24.8</td><td>25.1</td><td><span class="o">+1.2%</span></td><td>2</td><td>28 Jun</td><td><span class="badge b-o">Scheduled</span></td>
+              </tr>
+              <tr class="clickable-row" onclick="openAgenda('Central QLD Beef','24.2','23.9','+1.3','2','2 Jul 2025')">
+                <td>Central QLD Beef <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>23.9</td><td>24.2</td><td><span class="o">+1.3%</span></td><td>2</td><td>2 Jul</td><td><span class="badge b-o">Scheduled</span></td>
+              </tr>
+              <tr class="clickable-row" onclick="openAgenda('Murray Basin Cattle','22.1','22.1','0.0','2','5 Jul 2025')">
+                <td>Murray Basin Cattle <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>22.1</td><td>22.1</td><td><span style="color:#888;">0.0%</span></td><td>2</td><td>5 Jul</td><td><span class="badge b-o">Scheduled</span></td>
+              </tr>
+              <tr class="clickable-row" onclick="openAgenda('NT Beef Co.','26.5','26.3','+0.8','3','12 Jul 2025')">
+                <td>NT Beef Co. <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>26.3</td><td>26.5</td><td><span class="o">+0.8%</span></td><td>3</td><td>12 Jul</td><td><span class="badge b-r">Escalated</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           FLAG PROGRESS
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-flag">
+        <div class="pg-title">FLAG Scope 3 Target Progress</div>
+        <div class="pg-sub">40% absolute reduction in beef supply chain emissions by F33 · SBTi-validated</div>
+
+        <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="kpi"><div class="kpi-lbl">Baseline intensity (F24)</div><div class="kpi-val">24.8</div><div class="kpi-sub">kg CO₂-e / kg HSCW</div></div>
+          <div class="kpi"><div class="kpi-lbl">Current intensity (F27)</div><div class="kpi-val g">21.8</div><div class="kpi-sub">↓12.1% from baseline</div></div>
+          <div class="kpi"><div class="kpi-lbl">F33 target intensity</div><div class="kpi-val">14.9</div><div class="kpi-sub">kg CO₂-e/kg HSCW (−40%)</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Progress toward F33 FLAG target</div>
+          <div class="row-sb" style="margin-bottom:6px;">
+            <span>Reduction achieved: 12.1% of 40% required</span>
+            <span style="font-weight:500;color:#2D8A52;">30% of target met</span>
+          </div>
+          <div class="prog-bar" style="height:12px;"><div class="prog-fill" style="width:30%;"></div></div>
+          <div class="row-sb" style="margin-top:4px;"><span>F24 baseline (24.8)</span><span>F27 current (21.8)</span><span>F33 target (14.9)</span></div>
+
+          <div class="card-ttl" style="margin-top:20px;">Emissions intensity trajectory — F24 to F33</div>
+          <div class="clegend">
+            <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#2D8A52;"></span>Actual</span>
+            <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#E07B2A;"></span>Required trajectory</span>
+          </div>
+          <div style="position:relative;width:100%;height:240px;">
+            <canvas id="flagChart" role="img" aria-label="Line chart showing actual emissions F24 to F27 and required FLAG trajectory through F33">
+              F24: actual 24.8, target 24.8. F27: actual 21.8, target 21.5. F33 target: 14.9.
+            </canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Behavioural mechanism — A2 test evidence</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+            <div>
+              <div style="font-size:12px;color:#6B7280;margin-bottom:8px;">Managers raising emissions in supplier conversation (%)</div>
+              <div style="position:relative;width:100%;height:160px;">
+                <canvas id="behavChart" role="img" aria-label="Bar chart: control condition 43%, EPS treatment 62%, confirmation threshold 60%">
+                  Control: 43%, EPS treatment: 62%.
+                </canvas>
+              </div>
+            </div>
+            <div style="padding-top:4px;">
+              <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">Key findings</div>
+              <div style="font-size:12px;line-height:1.9;color:#1a1a1a;">
+                <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>62% of EPS managers raised emissions — confirmation threshold met</span></div>
+                <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>69% would not have raised it without the shelf-placement consequence</span></div>
+                <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>"No commercial reason" barrier dropped from 43% → 8%</span></div>
+                <div style="display:flex;gap:7px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>Capability explainer needed — confidence gap not yet closed</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           MEETINGS LIST
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-meetings">
+        <div class="pg-title">Sustainability Engagement Meetings</div>
+        <div class="pg-sub">8 bottom-quartile suppliers · 2 or more consecutive non-improving cycles · Click a row to open the meeting agenda</div>
+
+        <div class="card">
+          <table>
+            <thead><tr><th>Supplier</th><th>F26</th><th>F27</th><th>Change</th><th>Consecutive cycles</th><th>Meeting date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="clickable-row" onclick="openAgenda('Outback Prime Meats','25.1','24.8','+1.2','2','28 Jun 2025')"><td>Outback Prime Meats <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>24.8</td><td>25.1</td><td><span class="o">+1.2%</span></td><td>2</td><td>28 Jun 2025</td><td><span class="badge b-o">Scheduled</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Central QLD Beef','24.2','23.9','+1.3','2','2 Jul 2025')"><td>Central QLD Beef <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>23.9</td><td>24.2</td><td><span class="o">+1.3%</span></td><td>2</td><td>2 Jul 2025</td><td><span class="badge b-o">Scheduled</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Murray Basin Cattle','22.1','22.1','0.0','2','5 Jul 2025')"><td>Murray Basin Cattle <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>22.1</td><td>22.1</td><td><span style="color:#888;">0.0%</span></td><td>2</td><td>5 Jul 2025</td><td><span class="badge b-o">Scheduled</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('NT Beef Co.','26.5','26.3','+0.8','3','12 Jul 2025')"><td>NT Beef Co. <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>26.3</td><td>26.5</td><td><span class="o">+0.8%</span></td><td>3</td><td>12 Jul 2025</td><td><span class="badge b-r">Escalated</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Riverina Pastoral','21.9','21.8','+0.5','2','TBC')"><td>Riverina Pastoral <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>21.8</td><td>21.9</td><td><span class="o">+0.5%</span></td><td>2</td><td>TBC</td><td><span class="badge b-gr">Pending</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Darling Downs Beef','25.1','25.4','−1.2','2','TBC')"><td>Darling Downs Beef <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>25.4</td><td>25.1</td><td><span class="o">−1.2%</span></td><td>2</td><td>TBC</td><td><span class="badge b-gr">Pending</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Blue Mountains Cattle','23.6','23.5','+0.4','2','TBC')"><td>Blue Mountains Cattle <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>23.5</td><td>23.6</td><td><span class="o">+0.4%</span></td><td>2</td><td>TBC</td><td><span class="badge b-gr">Pending</span></td></tr>
+              <tr class="clickable-row" onclick="openAgenda('Southwest WA Beef','25.3','24.9','+1.6','2','TBC')"><td>Southwest WA Beef <span style="font-size:10px;color:#2D8A52;">→ agenda</span></td><td>24.9</td><td>25.3</td><td><span class="o">+1.6%</span></td><td>2</td><td>TBC</td><td><span class="badge b-gr">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">SDG alignment</div>
+          <div class="sdg-row">
+            <div class="sdg-card" style="background:#EAF3DE;">
+              <div style="font-size:12px;font-weight:500;color:#27500A;">SDG 12 — Responsible Consumption</div>
+              <div style="font-size:12px;color:#3B6D11;margin-top:3px;">Embedding emissions accountability into procurement contracts</div>
+            </div>
+            <div class="sdg-card" style="background:#E6F1FB;">
+              <div style="font-size:12px;font-weight:500;color:#0C447C;">SDG 13 — Climate Action</div>
+              <div style="font-size:12px;color:#185FA5;margin-top:3px;">Contributing to 40% Scope 3 FLAG reduction target by F33</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           MEETING AGENDA DRILL-DOWN
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-agenda">
+        <div class="back-btn" onclick="sw('meetings', document.getElementById('nav-meetings'))">
+          <i class="ti ti-arrow-left"></i> Back to meetings
+        </div>
+
+        <div class="agenda-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div style="font-size:15px;font-weight:500;color:white;" id="agenda-supplier-name"></div>
+              <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;">Sustainability Engagement Meeting · Bottom-quartile supplier</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <div style="background:rgba(255,255,255,.1);border-radius:6px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,.85);">Meeting: <span id="agenda-date"></span></div>
+              <div style="background:rgba(255,255,255,.1);border-radius:6px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,.85);">Prepared by Woolworths Sustainability Team</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;">
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:3px;">F26 intensity</div>
+              <div style="font-size:18px;font-weight:500;color:white;" id="agenda-f26"></div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);">kg CO₂-e/kg HSCW</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:3px;">F27 intensity</div>
+              <div style="font-size:18px;font-weight:500;color:#FF9966;" id="agenda-f27"></div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);">kg CO₂-e/kg HSCW</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:3px;">Year-on-year change</div>
+              <div style="font-size:18px;font-weight:500;color:#FF9966;" id="agenda-change"></div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4);">Consecutive cycles: <span id="agenda-cycles"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:500;color:#6B7280;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Meeting agenda</div>
+
+        <div class="agenda-step">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div class="step-num">1</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">Review of current emissions intensity data</div>
+              <div style="font-size:12px;color:#6B7280;line-height:1.8;">
+                <div>· Review F26 and F27 emissions intensity results and year-on-year trend</div>
+                <div>· Discuss drivers of change and data sources (MLA SSP report)</div>
+                <div>· Identify key operational opportunities and on-farm challenges</div>
+              </div>
+              <div class="step-outcome">✓ Outcome: Shared understanding of performance data and contributing factors</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-step">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div class="step-num">2</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">Overview of emissions-reduction support — MLA CN30 Program</div>
+              <div style="font-size:12px;color:#6B7280;line-height:1.8;">
+                <div>· Program options and funding available through MLA's Carbon Neutral 2030 initiative</div>
+                <div>· Practical on-farm support: advisory tools, herd management, feed efficiency</div>
+                <div>· Case studies from comparable beef producers who improved EPS scores</div>
+              </div>
+              <div class="step-outcome">✓ Outcome: Agreed support pathway and confirmed next steps with MLA</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-step">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div class="step-num">3</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">Agree improvement target for F28 EPS baseline</div>
+              <div style="font-size:12px;color:#6B7280;line-height:1.8;">
+                <div>· Set a measurable emissions intensity target for the F28 evaluation cycle</div>
+                <div>· Confirm specific actions and milestones the supplier will take before F28</div>
+                <div>· Record agreed target in the portal — this becomes the official F28 EPS baseline</div>
+              </div>
+              <div class="step-warning">⚠ Note: If no improvement is recorded by F28, matter is escalated to senior commercial review</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:13px;font-weight:500;color:#1a1a1a;">F28 committed improvement target</div>
+            <span class="badge b-bl">To be agreed in meeting</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="number" id="target-input" placeholder="Enter target (kg CO₂-e/kg HSCW)" style="flex:1;" min="10" max="30" step="0.1" />
+            <button class="primary" onclick="setTarget()">Record target</button>
+          </div>
+          <div id="target-confirmation" style="display:none;margin-top:10px;border-radius:8px;padding:8px 12px;font-size:12px;"></div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           SHELF OUTCOMES
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-shelf">
+        <div class="pg-title">Shelf Placement Outcomes — F27 Cycle</div>
+        <div class="pg-sub">Enforcement credibility is critical — all outcomes are binding and communicated to suppliers this cycle</div>
+
+        <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
+          <div class="kpi"><div class="kpi-lbl">Premium shelf gained</div><div class="kpi-val g">11</div><div class="kpi-sub">moved into top quartile</div></div>
+          <div class="kpi"><div class="kpi-lbl">Premium shelf maintained</div><div class="kpi-val" style="color:#185FA5;">25</div><div class="kpi-sub">retained top-quartile position</div></div>
+          <div class="kpi"><div class="kpi-lbl">Premium shelf lost</div><div class="kpi-val o">4</div><div class="kpi-sub">dropped from top quartile</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Shelf placement changes — F26 to F27</div>
+
+          <div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Gained premium shelf this cycle</div>
+          <div class="shelf-gained"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Rocky Vista Orchard</span><span class="g">F27: 19.2 (↓8.6% from 21.0)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Q2 → Top quartile · Qualifies for premium beef range</div></div>
+          <div class="shelf-gained"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Tablelands Pastoral</span><span class="g">F27: 18.8 (↓7.4% from 20.3)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Q2 → Top quartile · Qualifies for premium beef range</div></div>
+          <div class="shelf-gained"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Gippsland Prime Beef</span><span class="g">F27: 19.4 (↓5.8% from 20.6)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Q2 → Top quartile · Qualifies for premium beef range</div></div>
+
+          <div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;">Lost premium shelf this cycle</div>
+          <div class="shelf-lost"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Granite Belt Beef</span><span class="o">F27: 20.1 (↑2.6% from 19.6)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Top quartile → Q2 · Premium shelf removed for F27</div></div>
+          <div class="shelf-lost"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Northern Tablelands Co.</span><span class="o">F27: 20.4 (↑3.0% from 19.8)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Top quartile → Q2 · Premium shelf removed for F27</div></div>
+
+          <div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;">Maintained premium shelf</div>
+          <div class="shelf-maintained"><div style="font-size:12px;color:#1a1a1a;">25 suppliers retained top-quartile status — premium shelf placement confirmed for F27. Supplier notifications sent 15 May 2025.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-ttl">Why enforcement credibility matters</div>
+          <div style="font-size:12px;color:#1a1a1a;line-height:1.9;">
+            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>A2 testing found that role-identity shift drives behaviour — if managers discover consequences are symbolic, the effect weakens quickly</span></div>
+            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>4 suppliers visibly lost premium shelf in F27 — this creates a credible signal across the full supplier community</span></div>
+            <div style="display:flex;gap:8px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>11 suppliers gained premium shelf — demonstrating the commercial reward is real and achievable</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /body -->
+</div><!-- /portal -->
+
+<script>
+  /* ── Tab switching ── */
+  function sw(name, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    if (el) el.classList.add('active');
+  }
+
+  /* ── Open meeting agenda ── */
+  function openAgenda(name, f27, f26, change, cycles, date) {
+    document.getElementById('agenda-supplier-name').textContent = name;
+    document.getElementById('agenda-f26').textContent = f26;
+    document.getElementById('agenda-f27').textContent = f27;
+    document.getElementById('agenda-change').textContent = change + '%';
+    document.getElementById('agenda-cycles').textContent = cycles;
+    document.getElementById('agenda-date').textContent = date;
+    document.getElementById('target-confirmation').style.display = 'none';
+    document.getElementById('target-input').value = '';
+    sw('agenda', document.getElementById('nav-meetings'));
+  }
+
+  /* ── Record F28 target ── */
+  function setTarget() {
+    const v = parseFloat(document.getElementById('target-input').value);
+    const name = document.getElementById('agenda-supplier-name').textContent;
+    const conf = document.getElementById('target-confirmation');
+    if (!v || v < 10 || v > 35) {
+      conf.style.display = 'block';
+      conf.style.background = '#FEE8E8';
+      conf.style.color = '#A32D2D';
+      conf.textContent = 'Please enter a valid target between 10 and 35 kg CO₂-e/kg HSCW.';
+      return;
+    }
+    conf.style.display = 'block';
+    conf.style.background = '#EAF3DE';
+    conf.style.color = '#27500A';
+    conf.textContent = '✓ F28 target of ' + v.toFixed(1) + ' kg CO₂-e/kg HSCW recorded for ' + name + '. This will be used as the official baseline in the F28 EPS evaluation.';
+  }
+
+  /* ── Charts ── */
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = '#6B7280';
+
+  // Trend Chart
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: ['F24', 'F25', 'F26', 'F27'],
+      datasets: [
+        { label: 'Actual intensity', data: [24.8, 24.1, 23.1, 21.8], borderColor: '#2D8A52', backgroundColor: 'rgba(45,138,82,0.08)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#2D8A52', fill: true, tension: 0.3 },
+        { label: 'FLAG target',      data: [24.8, 23.7, 22.6, 21.5], borderColor: '#E07B2A', borderWidth: 2, borderDash: [6, 4], pointRadius: 4, pointBackgroundColor: '#E07B2A', fill: false, tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 20, max: 26, ticks: { callback: v => v.toFixed(1) }, grid: { color: '#E5E7E3' }, title: { display: true, text: 'kg CO₂-e/kg HSCW', font: { size: 11 } } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Quartile Chart
+  new Chart(document.getElementById('quartileChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Top quartile', 'Q2', 'Q3', 'Bottom quartile', 'Outstanding'],
+      datasets: [{ data: [36, 32, 31, 28, 15], backgroundColor: ['#2D8A52', '#4CAF72', '#88C9A0', '#E07B2A', '#C4C2B8'], borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { grid: { color: '#E5E7E3' }, ticks: { stepSize: 10 } }, y: { grid: { display: false } } }
+    }
+  });
+
+  // FLAG long-range Chart
+  new Chart(document.getElementById('flagChart'), {
+    type: 'line',
+    data: {
+      labels: ['F24', 'F25', 'F26', 'F27', 'F28', 'F29', 'F30', 'F31', 'F32', 'F33'],
+      datasets: [
+        { label: 'Actual',    data: [24.8, 24.1, 23.1, 21.8, null, null, null, null, null, null], borderColor: '#2D8A52', backgroundColor: 'rgba(45,138,82,0.08)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#2D8A52', fill: true, tension: 0.3, spanGaps: false },
+        { label: 'Required',  data: [24.8, 23.7, 22.6, 21.5, 20.4, 19.3, 18.2, 17.1, 16.0, 14.9], borderColor: '#E07B2A', borderWidth: 2, borderDash: [6, 4], pointRadius: 4, pointBackgroundColor: '#E07B2A', fill: false, tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 13, max: 26, ticks: { callback: v => v.toFixed(1) }, grid: { color: '#E5E7E3' }, title: { display: true, text: 'kg CO₂-e/kg HSCW', font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0 } }
+      }
+    }
+  });
+
+  // Behavioural Chart
+  new Chart(document.getElementById('behavChart'), {
+    type: 'bar',
+    data: {
+      labels: [['Control', '(no EPS)'], ['EPS', 'treatment']],
+      datasets: [{ data: [43, 62], backgroundColor: ['#B4B2A9', '#2D8A52'], borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#E5E7E3' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
