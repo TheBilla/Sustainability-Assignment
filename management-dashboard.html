@@ -344,7 +344,7 @@
       ════════════════════════════════ -->
       <div class="panel active" id="panel-overview">
         <div class="pg-title">F27 Cycle — EPS Program Overview</div>
-        <div class="pg-sub">Beef &amp; Lamb · 142 active suppliers · Renewal deadline 30 Jun 2025</div>
+        <div class="pg-sub">Beef · 142 active suppliers · Renewal deadline 30 Jun 2025</div>
 
         <div class="kpi-row">
           <div class="kpi">
@@ -404,11 +404,7 @@
                 <div class="prog-bar"><div class="prog-fill" style="width:83%;"></div></div>
                 <div class="row-sb"><span>33 / 40 submitted</span><span>7 outstanding</span></div>
               </div>
-              <div>
-                <div class="row-sb" style="margin-bottom:4px;"><span>Lamb</span><span style="font-weight:500;">84%</span></div>
-                <div class="prog-bar"><div class="prog-fill" style="width:84%;"></div></div>
-                <div class="row-sb"><span>16 / 19 submitted</span><span>3 outstanding</span></div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -588,6 +584,60 @@
               <div style="font-size:18px;font-weight:500;color:#FF9966;" id="agenda-change"></div>
               <div style="font-size:10px;color:rgba(255,255,255,.4);">Consecutive cycles: <span id="agenda-cycles"></span></div>
             </div>
+          </div>
+        </div>
+
+        <!-- A2 Refinement: Capability Explainer — closes the confidence gap identified in A2 testing -->
+        <div style="margin-bottom:16px;">
+          <div
+            id="explainer-toggle"
+            onclick="toggleExplainer()"
+            style="display:flex;align-items:center;justify-content:space-between;background:#EAF3DE;border:0.5px solid #b6ddc4;border-radius:10px;padding:10px 14px;cursor:pointer;user-select:none;"
+          >
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i class="ti ti-help-circle" style="color:#2D8A52;font-size:16px;"></i>
+              <span style="font-size:13px;font-weight:500;color:#1A6B38;">How to discuss this with your supplier</span>
+              
+            </div>
+            <i class="ti ti-chevron-down" id="explainer-chevron" style="color:#2D8A52;font-size:16px;transition:transform .2s;"></i>
+          </div>
+
+          <div id="explainer-body" style="display:none;border:0.5px solid #b6ddc4;border-top:none;border-radius:0 0 10px 10px;background:#fff;padding:14px 16px;">
+
+            <div style="margin-bottom:14px;">
+              <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">
+                <i class="ti ti-chart-bar" style="color:#2D8A52;margin-right:4px;"></i>What this number actually means
+              </div>
+              <div style="font-size:12px;color:#4B5563;line-height:1.8;background:#F8FAF8;border-radius:8px;padding:10px 12px;">
+                Emissions intensity measures how many kilograms of greenhouse gas are produced per kilogram of beef harvested (kg CO₂-e/kg HSCW). A <strong>lower number means more efficient production</strong>. For example, this supplier's F27 figure means they produce that many kg of CO₂-equivalent for every kg of beef — improving this score means doing the same or more with less environmental impact. You don't need to explain the science; just say: <em>"This is a measure of how efficiently your operation produces beef from an emissions perspective, and it's been improving industry-wide."</em>
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">
+                <i class="ti ti-shield-check" style="color:#2D8A52;margin-right:4px;"></i>MLA verification — say this with confidence
+              </div>
+              <div style="font-size:12px;color:#4B5563;line-height:1.8;background:#F8FAF8;border-radius:8px;padding:10px 12px;">
+                This figure comes directly from the <strong>MLA Supplier Sustainability Program (SSP)</strong> and has been independently verified by Meat &amp; Livestock Australia. If a supplier questions the data, you can state clearly: <em>"This figure is sourced from your MLA SSP report — it's the same data MLA uses across the industry, not a Woolworths calculation."</em>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:8px;">
+                <i class="ti ti-message-circle" style="color:#2D8A52;margin-right:4px;"></i>Common supplier pushbacks — suggested responses
+              </div>
+              <div style="border:0.5px solid #e0e0da;border-radius:8px;overflow:hidden;">
+                <div style="padding:10px 12px;border-bottom:0.5px solid #e0e0da;">
+                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This data isn't accurate — our emissions are lower than this."</div>
+                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"I understand that concern. The figure comes directly from your MLA SSP submission, so it reflects the data your operation reported to MLA. If you believe there's an error, the best path is to work with MLA to update your SSP report — we'd be happy to accept a revised figure before the next cycle closes."</em></div>
+                </div>
+                <div style="padding:10px 12px;">
+                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This isn't fair on smaller farms — we don't have the resources to compete."</div>
+                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"That's a fair point, and it's exactly why the EPS measures year-on-year improvement rather than an absolute benchmark. We're not asking you to match large operations — we're looking for progress relative to your own baseline. The MLA CN30 program also has funded advisory support specifically designed for smaller producers. We can connect you with that today."</em></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -809,6 +859,14 @@
       }
     }
   });
+
+  function toggleExplainer() {
+    const body = document.getElementById('explainer-body');
+    const chevron = document.getElementById('explainer-chevron');
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
 </script>
 
 </body>
