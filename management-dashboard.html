@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Woolworths — EPS Management Portal</title>
+  <title>Woolworths - EPS Management Portal</title>
 
   <!--
     ============================================================
     WOOLWORTHS EPS MANAGEMENT DASHBOARD
-    A3: Deploy the Concept — MMGT6120
+    A3: Deploy the Concept - MMGT6120
     ============================================================
     FOR BILLA:
     - This is a standalone HTML file. Drop it into the repo as
@@ -21,7 +21,7 @@
         3. Replace hardcoded CSS with your existing Tailwind classes
            where they match (dark sidebar = bg-[#1A2E20] etc.)
     - The sidebar colour #1A2E20 matches the supplier portal exactly.
-    - All data is hardcoded/illustrative — wire to your backend as needed.
+    - All data is hardcoded/illustrative - wire to your backend as needed.
     ============================================================
   -->
 
@@ -343,7 +343,7 @@
            OVERVIEW
       ════════════════════════════════ -->
       <div class="panel active" id="panel-overview">
-        <div class="pg-title">F27 Cycle — EPS Program Overview</div>
+        <div class="pg-title">F27 Cycle - EPS Program Overview</div>
         <div class="pg-sub">Beef · 142 active suppliers · Renewal deadline 30 Jun 2025</div>
 
         <div class="kpi-row">
@@ -370,7 +370,7 @@
         </div>
 
         <div class="card">
-          <div class="card-ttl">Portfolio emissions intensity — F24 to F27 vs FLAG target trajectory</div>
+          <div class="card-ttl">Portfolio emissions intensity - F24 to F27 vs FLAG target trajectory</div>
           <div class="clegend">
             <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#2D8A52;"></span>Actual avg intensity</span>
             <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#E07B2A;"></span>FLAG target</span>
@@ -384,7 +384,7 @@
 
         <div class="two-col">
           <div class="card">
-            <div class="card-ttl">Supplier quartile distribution — F27</div>
+            <div class="card-ttl">Supplier quartile distribution - F27</div>
             <div style="position:relative;width:100%;height:200px;">
               <canvas id="quartileChart" role="img" aria-label="Horizontal bar chart: top quartile 36, Q2 32, Q3 31, bottom quartile 28, outstanding 15">
                 Top quartile 36, Q2 32, Q3 31, Bottom quartile 28, Outstanding 15.
@@ -418,7 +418,7 @@
         <div class="pg-sub">142 beef suppliers · F27 EPS scores and year-on-year performance</div>
 
         <div class="card">
-          <div class="card-ttl">Top performers — F27 (top quartile, ≤19.5 kg CO₂-e/kg HSCW)</div>
+          <div class="card-ttl">Top performers - F27 (top quartile, ≤19.5 kg CO₂-e/kg HSCW)</div>
           <table>
             <thead><tr><th>Supplier</th><th>F26</th><th>F27</th><th>Change</th><th>Percentile</th><th>Shelf status</th></tr></thead>
             <tbody>
@@ -432,7 +432,7 @@
         </div>
 
         <div class="card">
-          <div class="card-ttl">Bottom quartile — flagged for engagement meeting (≥23.5 kg CO₂-e/kg HSCW, 2+ cycles)</div>
+          <div class="card-ttl">Bottom quartile - flagged for engagement meeting (≥23.5 kg CO₂-e/kg HSCW, 2+ cycles)</div>
           <table>
             <thead><tr><th>Supplier</th><th>F26</th><th>F27</th><th>Change</th><th>Cycles</th><th>Meeting</th><th>Status</th></tr></thead>
             <tbody>
@@ -475,7 +475,7 @@
           <div class="prog-bar" style="height:12px;"><div class="prog-fill" style="width:30%;"></div></div>
           <div class="row-sb" style="margin-top:4px;"><span>F24 baseline (24.8)</span><span>F27 current (21.8)</span><span>F33 target (14.9)</span></div>
 
-          <div class="card-ttl" style="margin-top:20px;">Emissions intensity trajectory — F24 to F33</div>
+          <div class="card-ttl" style="margin-top:20px;">Emissions intensity trajectory - F24 to F33</div>
           <div class="clegend">
             <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#2D8A52;"></span>Actual</span>
             <span style="display:flex;align-items:center;gap:5px;"><span class="cleg-dot" style="background:#E07B2A;"></span>Required trajectory</span>
@@ -488,7 +488,7 @@
         </div>
 
         <div class="card">
-          <div class="card-ttl">Behavioural mechanism — A2 test evidence</div>
+          <div class="card-ttl">Behavioural mechanism</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
             <div>
               <div style="font-size:12px;color:#6B7280;margin-bottom:8px;">Managers raising emissions in supplier conversation (%)</div>
@@ -501,10 +501,10 @@
             <div style="padding-top:4px;">
               <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">Key findings</div>
               <div style="font-size:12px;line-height:1.9;color:#1a1a1a;">
-                <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>62% of EPS managers raised emissions — confirmation threshold met</span></div>
+                <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>62% of EPS managers raised emissions, meeting the confirmation threshold.</span></div>
                 <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>69% would not have raised it without the shelf-placement consequence</span></div>
                 <div style="display:flex;gap:7px;margin-bottom:5px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>"No commercial reason" barrier dropped from 43% → 8%</span></div>
-                <div style="display:flex;gap:7px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>Capability explainer needed — confidence gap not yet closed</span></div>
+                <div style="display:flex;gap:7px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>Capability explainer needed, as the confidence gap is not yet closed.</span></div>
               </div>
             </div>
           </div>
@@ -538,11 +538,11 @@
           <div class="card-ttl">SDG alignment</div>
           <div class="sdg-row">
             <div class="sdg-card" style="background:#EAF3DE;">
-              <div style="font-size:12px;font-weight:500;color:#27500A;">SDG 12 — Responsible Consumption</div>
+              <div style="font-size:12px;font-weight:500;color:#27500A;">SDG 12: Responsible Consumption</div>
               <div style="font-size:12px;color:#3B6D11;margin-top:3px;">Embedding emissions accountability into procurement contracts</div>
             </div>
             <div class="sdg-card" style="background:#E6F1FB;">
-              <div style="font-size:12px;font-weight:500;color:#0C447C;">SDG 13 — Climate Action</div>
+              <div style="font-size:12px;font-weight:500;color:#0C447C;">SDG 13: Climate Action</div>
               <div style="font-size:12px;color:#185FA5;margin-top:3px;">Contributing to 40% Scope 3 FLAG reduction target by F33</div>
             </div>
           </div>
@@ -587,7 +587,7 @@
           </div>
         </div>
 
-        <!-- A2 Refinement: Capability Explainer — closes the confidence gap identified in A2 testing -->
+        <!-- A2 Refinement: Capability Explainer - closes the confidence gap identified in A2 testing -->
         <div style="margin-bottom:16px;">
           <div
             id="explainer-toggle"
@@ -609,31 +609,31 @@
                 <i class="ti ti-chart-bar" style="color:#2D8A52;margin-right:4px;"></i>What this number actually means
               </div>
               <div style="font-size:12px;color:#4B5563;line-height:1.8;background:#F8FAF8;border-radius:8px;padding:10px 12px;">
-                Emissions intensity measures how many kilograms of greenhouse gas are produced per kilogram of beef harvested (kg CO₂-e/kg HSCW). A <strong>lower number means more efficient production</strong>. For example, this supplier's F27 figure means they produce that many kg of CO₂-equivalent for every kg of beef — improving this score means doing the same or more with less environmental impact. You don't need to explain the science; just say: <em>"This is a measure of how efficiently your operation produces beef from an emissions perspective, and it's been improving industry-wide."</em>
+                Emissions intensity measures how many kilograms of greenhouse gas are produced per kilogram of beef harvested (kg CO₂-e/kg HSCW). A <strong>lower number means more efficient production</strong>. For example, this supplier's F27 figure means they produce that many kg of CO₂-equivalent for every kg of beef - improving this score means doing the same or more with less environmental impact. You don't need to explain the science; just say: <em>"This is a measure of how efficiently your operation produces beef from an emissions perspective, and it's been improving industry-wide."</em>
               </div>
             </div>
 
             <div style="margin-bottom:14px;">
               <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">
-                <i class="ti ti-shield-check" style="color:#2D8A52;margin-right:4px;"></i>MLA verification — say this with confidence
+                <i class="ti ti-shield-check" style="color:#2D8A52;margin-right:4px;"></i>MLA verification - say this with confidence
               </div>
               <div style="font-size:12px;color:#4B5563;line-height:1.8;background:#F8FAF8;border-radius:8px;padding:10px 12px;">
-                This figure comes directly from the <strong>MLA Supplier Sustainability Program (SSP)</strong> and has been independently verified by Meat &amp; Livestock Australia. If a supplier questions the data, you can state clearly: <em>"This figure is sourced from your MLA SSP report — it's the same data MLA uses across the industry, not a Woolworths calculation."</em>
+                This figure comes directly from the <strong>MLA Supplier Sustainability Program (SSP)</strong> and has been independently verified by Meat &amp; Livestock Australia. If a supplier questions the data, you can state clearly: <em>"This figure is sourced from your MLA SSP report - it's the same data MLA uses across the industry, not a Woolworths calculation."</em>
               </div>
             </div>
 
             <div>
               <div style="font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:8px;">
-                <i class="ti ti-message-circle" style="color:#2D8A52;margin-right:4px;"></i>Common supplier pushbacks — suggested responses
+                <i class="ti ti-message-circle" style="color:#2D8A52;margin-right:4px;"></i>Common supplier pushbacks - suggested responses
               </div>
               <div style="border:0.5px solid #e0e0da;border-radius:8px;overflow:hidden;">
                 <div style="padding:10px 12px;border-bottom:0.5px solid #e0e0da;">
-                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This data isn't accurate — our emissions are lower than this."</div>
-                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"I understand that concern. The figure comes directly from your MLA SSP submission, so it reflects the data your operation reported to MLA. If you believe there's an error, the best path is to work with MLA to update your SSP report — we'd be happy to accept a revised figure before the next cycle closes."</em></div>
+                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This data isn't accurate - our emissions are lower than this."</div>
+                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"I understand that concern. The figure comes directly from your MLA SSP submission, so it reflects the data your operation reported to MLA. If you believe there's an error, the best path is to work with MLA to update your SSP report - we'd be happy to accept a revised figure before the next cycle closes."</em></div>
                 </div>
                 <div style="padding:10px 12px;">
-                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This isn't fair on smaller farms — we don't have the resources to compete."</div>
-                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"That's a fair point, and it's exactly why the EPS measures year-on-year improvement rather than an absolute benchmark. We're not asking you to match large operations — we're looking for progress relative to your own baseline. The MLA CN30 program also has funded advisory support specifically designed for smaller producers. We can connect you with that today."</em></div>
+                  <div style="font-size:11px;font-weight:500;color:#E07B2A;margin-bottom:4px;">💬 "This isn't fair on smaller farms - we don't have the resources to compete."</div>
+                  <div style="font-size:12px;color:#4B5563;line-height:1.7;"><strong>Suggested response:</strong> <em>"That's a fair point, and it's exactly why the EPS measures year-on-year improvement rather than an absolute benchmark. We're not asking you to match large operations - we're looking for progress relative to your own baseline. The MLA CN30 program also has funded advisory support specifically designed for smaller producers. We can connect you with that today."</em></div>
                 </div>
               </div>
             </div>
@@ -662,7 +662,7 @@
           <div style="display:flex;align-items:flex-start;gap:12px;">
             <div class="step-num">2</div>
             <div style="flex:1;">
-              <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">Overview of emissions-reduction support — MLA CN30 Program</div>
+              <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:5px;">Overview of emissions-reduction support - MLA CN30 Program</div>
               <div style="font-size:12px;color:#6B7280;line-height:1.8;">
                 <div>· Program options and funding available through MLA's Carbon Neutral 2030 initiative</div>
                 <div>· Practical on-farm support: advisory tools, herd management, feed efficiency</div>
@@ -681,7 +681,7 @@
               <div style="font-size:12px;color:#6B7280;line-height:1.8;">
                 <div>· Set a measurable emissions intensity target for the F28 evaluation cycle</div>
                 <div>· Confirm specific actions and milestones the supplier will take before F28</div>
-                <div>· Record agreed target in the portal — this becomes the official F28 EPS baseline</div>
+                <div>· Record agreed target in the portal - this becomes the official F28 EPS baseline</div>
               </div>
               <div class="step-warning">⚠ Note: If no improvement is recorded by F28, matter is escalated to senior commercial review</div>
             </div>
@@ -705,8 +705,8 @@
            SHELF OUTCOMES
       ════════════════════════════════ -->
       <div class="panel" id="panel-shelf">
-        <div class="pg-title">Shelf Placement Outcomes — F27 Cycle</div>
-        <div class="pg-sub">Enforcement credibility is critical — all outcomes are binding and communicated to suppliers this cycle</div>
+        <div class="pg-title">Shelf Placement Outcomes - F27 Cycle</div>
+        <div class="pg-sub">Enforcement credibility is critical - all outcomes are binding and communicated to suppliers this cycle</div>
 
         <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
           <div class="kpi"><div class="kpi-lbl">Premium shelf gained</div><div class="kpi-val g">11</div><div class="kpi-sub">moved into top quartile</div></div>
@@ -715,7 +715,7 @@
         </div>
 
         <div class="card">
-          <div class="card-ttl">Shelf placement changes — F26 to F27</div>
+          <div class="card-ttl">Shelf placement changes - F26 to F27</div>
 
           <div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Gained premium shelf this cycle</div>
           <div class="shelf-gained"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Rocky Vista Orchard</span><span class="g">F27: 19.2 (↓8.6% from 21.0)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Q2 → Top quartile · Qualifies for premium beef range</div></div>
@@ -727,15 +727,16 @@
           <div class="shelf-lost"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;">Northern Tablelands Co.</span><span class="o">F27: 20.4 (↑3.0% from 19.8)</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Moved Top quartile → Q2 · Premium shelf removed for F27</div></div>
 
           <div style="font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;">Maintained premium shelf</div>
-          <div class="shelf-maintained"><div style="font-size:12px;color:#1a1a1a;">25 suppliers retained top-quartile status — premium shelf placement confirmed for F27. Supplier notifications sent 15 May 2025.</div></div>
+          <div class="shelf-maintained"><div style="font-size:12px;color:#1a1a1a;">25 suppliers retained top-quartile status - premium shelf placement confirmed for F27. Supplier notifications sent 15 May 2025.</div></div>
         </div>
 
         <div class="card">
           <div class="card-ttl">Why enforcement credibility matters</div>
           <div style="font-size:12px;color:#1a1a1a;line-height:1.9;">
-            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>A2 testing found that role-identity shift drives behaviour — if managers discover consequences are symbolic, the effect weakens quickly</span></div>
-            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>4 suppliers visibly lost premium shelf in F27 — this creates a credible signal across the full supplier community</span></div>
-            <div style="display:flex;gap:8px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>11 suppliers gained premium shelf — demonstrating the commercial reward is real and achievable</span></div>
+            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>A2 testing found that role-identity shift drives behaviour. If managers discover consequences are symbolic, the effect weakens quickly.</span></div>
+            <div style="display:flex;gap:8px;margin-bottom:6px;"><span class="dot8" style="background:#E07B2A;margin-top:5px;"></span><span>4 suppliers visibly lost premium shelf in F27, creating a credible signal across the full supplier community.</span></div>
+            <div style="display:flex;gap:8px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>11 suppliers gained premium shelf, demonstrating the commercial reward is real and achievable.</span></div>
+            <div style="display:flex;gap:8px;margin-top:6px;"><span class="dot8" style="background:#2D8A52;margin-top:5px;"></span><span>The EPS measures each supplier against their own prior-year baseline, not an industry benchmark. Smaller producers are not structurally disadvantaged. Bottom-quartile suppliers receive MLA CN30 advisory support before any commercial consequence is applied.</span></div>
           </div>
         </div>
       </div>
